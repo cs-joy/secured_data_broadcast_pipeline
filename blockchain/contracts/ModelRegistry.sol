@@ -3,8 +3,8 @@ pragama solidity ^0.8.19;
 
 contract ModelRegistry {
     struct ModelMetadata {
-        bytes32 mmodelName;
-        bytes32 modelVersion;
+        string modelName;
+        string modelVersion;
         bytes32 modelHash;
         address creator;
         uint256 createdAt;
@@ -30,5 +30,79 @@ contract ModelRegistry {
         uint256 totalContributions;
     }
 
-    
+    mapping(bytes32 => ModelMetadata) public models;
+    mapping(bytes32 => ModelVersion[]) public modelversions;
+    mapping(address => ClientModel) public clientModels;
+    mapping(bytes32 => address[]) public modelContributors;
+
+    bytes32[] public allModelHashes;
+    address public admin;
+    uint256 public  totalModelsRegistered;
+
+    event ModelRegstered(
+        bytes32 indexed modelHash,
+        string modelName,
+        addreess indexed creator,
+        uint256 timestamp
+    );
+
+    event ModelUpdated(
+        bytes32 indexed oldModelHash,
+        bytes32 indexed newModelHash,
+        uint256 versionNumber
+    );
+
+    event ModelContribution(
+        bytes32 indexed modelHash,
+        address indexed contibutor,
+        uint256 timestamp
+    );
+
+    event ModelActivated(bytes32 indexed modelHash);
+    event ModelDeactivated(bytes32 indexed modelHash);
+
+    constructor() {
+        admin = msg.sender;
+        totalModelRegistered = 0;
+    }
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can perform this action");
+        _;
+    }
+
+    modifier modelExists(bytes32 _modelHash) {
+        require(models[_modelHash].creator != address(0), "Model does not exist");
+        _;
+    }
+
+    // TODO:
+    function registerModel() external returns (bytes32) {}
+
+    function updateModel() external onlyAdmin modelExists(_oldModelHash) {}
+
+    function contributeToModel() external modelExists(_modelHash) {}
+
+    function getModelDetails(bytes32 _modelhash) external view modelExists(_modelHash) {}
+
+    function getModelVersionHistory(bytes32 _modelHash) external view modelExists(_modelHash) {}
+
+    function getActiveModels() external view returns (bytes32[] memory) {}
+
+    function getClientContribution(address _client) external view returns (
+        bytes32[] memory modelhashes,
+        uint256[] memory timestamps,
+        uint256 totalContributions
+    ) {}
+
+    function getModelContributors(bytes32 _modelHash) external view modelExists(_modelHash) returns (address[] memory) {}
+
+    function toggleModelActive(bytes32 _modelHash) external onlyAdmin modelExists(_modelHash) {}
+
+    function getTotalModels() external view returns (uint256) {}
+
+    function getModelCountByType(string memory _modelType) external view returns (uint256) {}
+
+    // Helper function to conver uint to string
+    function uint2str(uint256 _i) internal pure returns (string memory) {}
 }
