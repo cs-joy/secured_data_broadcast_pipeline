@@ -77,7 +77,16 @@ contract ModelRegistry {
     }
 
     // TODO:
-    function registerModel() external returns (bytes32) {}
+    function registerModel(
+        string memory _modelName,
+        string memory _modelVersion,
+        bytes32 _modelHash,
+        string memory _modelType,
+        string memory _ipfsHash,
+        uint256 _accuracy
+    ) external returns (bytes32) {
+        require()
+    }
 
     function updateModel() external onlyAdmin modelExists(_oldModelHash) {}
 
