@@ -76,7 +76,7 @@ contract ModelRegistry {
         _;
     }
 
-    // TODO:
+    // new model registration
     function registerModel(
         string memory _modelName,
         string memory _modelVersion,
@@ -85,7 +85,44 @@ contract ModelRegistry {
         string memory _ipfsHash,
         uint256 _accuracy
     ) external returns (bytes32) {
-        require()
+        require(models[_modelHash].creator == address(0), "Model already registered");
+        require(bytes(_modelName).length > 0, "Model name required");
+
+        // set model metadata
+        models[_modelHash] = ModelMetadata({
+            modelName:_modelName,
+            modelVersion: _modelVersion,
+            modelHash: _modelHash,
+            creator: msg.sender,
+            createdAt: block.timestamp,
+            lastUpdated: block.timestamp,
+            versionNumber: 1,
+            isActive: true,
+            ipfsHash: _ipfsHash,
+            accuracy: _accuracy,
+            modelType: _modelType
+        })
+
+        // store initial version of the model
+        ModelVersion memory initialVersion = ModelVersion(
+            versionId: 1,
+            modelHash: _modelHash,
+            timestamp: block.timestamp,
+            changeLog: "Initial model registration"
+        )
+
+        // set initial version of the model of corresponding to the model hash
+        modelVersion[_modelHash].push(initialVersion);
+
+        // store each model hash
+        allModelHashes.push(_modelHash);
+
+        // increment by 1
+        totalModelsRegistered++;
+
+        emit ModelRegistered(_modelHash, _modelName, msg.sender, block.timestamp);
+
+        return _modelHash;
     }
 
     function updateModel() external onlyAdmin modelExists(_oldModelHash) {}
