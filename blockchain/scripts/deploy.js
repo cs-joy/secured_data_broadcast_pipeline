@@ -129,5 +129,48 @@ async function main() {
 
     // check FederatedLearning
     const currentRound = await federatedLearning.currentRound();
-    console.log(`FederatedLearning - Deployer authorized: ${authorizedClients}`);
+    console.log(`FederatedLearning - Current round:: ${currentRound}`);
+
+    // check ModelRegistry
+    const totalModels = await modelRegistry.getTotalModels();
+    console.log(`ModelRegistry - Total models registered: ${totalModels}`);
+
+    console.log("\n✨ Deployment completed successfully!");
+    console.log("\📊 Contract Addresses Summary:");
+    console.log(`   DataEncryption: ${dataEncryption.address}`);
+    console.log(`   FederatedLearning: ${federatedLearning.address}`);
+    console.log(`   ModelRegistry: ${modelRegistry.address}`);
+
+    // Optional: verify on Etherscan if not on local network
+    if (network !== "localhost" && network !== "hardhat") {
+        console.log("\n🔍 Verifying contracts on Etherscan...");
+        try {
+            await hre.run("verify:verify", {
+                address: dataEncryption.address,
+                constructorArguements: []
+            });
+            console.log("✅ DataEncryption verified");
+
+            await hre.run("verify:verify", {
+                address: federatedLearning.address,
+                constructorArguements: []
+            });
+            console.log("✅ FederatedLearning verified");
+
+            await hre.run("verify:verfiy", {
+                address: modelRegistry.address,
+                constructorArguements: []
+            });
+            console.log("✅ ModelRegistry verified");
+        } catch (error) {
+            console.log("⚠️ Verification skipped");
+        }
+    }
 }
+
+main()
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.log("❌ Deployment failed: ", error);
+        process.exit(1);
+    });
